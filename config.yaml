@@ -1,0 +1,71 @@
+# Configuration for the WiFi Sensing Project
+
+# -- Data settings --
+data:
+  # Path to the root of the dataset directory
+  path: 'datasets'
+  # Scenario to use for training/testing
+  scenario: 'home_scenario_1'
+  # Sequence length for the transformer model. This should be close to or less than
+  # the average packets per label (~44) to avoid excessive padding.
+  sequence_length: 40
+  # Number of subcarriers to use from CSI data. 250 for scenario 1, 248 for scenario 2.
+  n_subcarriers: 250
+  # Number of RX antennas
+  n_rx_antennas: 2
+  # Number of TX antennas (as per data format 4*250 -> 4 is likely 2 tx * 2 rx, but we only have 2 physical antennas)
+  # Based on "Antenna: 2 antennas per device" and "4*250" csi data, it could be 4 streams. Let's assume 4 CSI streams.
+  n_csi_streams: 4
+
+# -- Model settings --
+model:
+  # Name of the model architecture
+  name: "csi_transformer"
+  # Number of features for the model input (n_subcarriers * n_csi_streams * num_receivers)
+  # For scenario 1: (250 * 4) * 2 = 2000 features. For scenario 2: (248 * 4) * 2 = 1984 features.
+  # We will dynamically set this in the training script, but 2000 is a good default for scenario 1.
+  input_features: 2000
+  # Dimension of the model's embeddings
+  d_model: 128
+  # Number of attention heads in the multi-head attention mechanism
+  n_heads: 8
+  # Number of transformer encoder layers
+  n_layers: 6
+  # Dimension of the feed-forward network model in nn.TransformerEncoderLayer
+  dim_feedforward: 512
+  # Dropout rate
+  dropout: 0.1
+  # Number of output classes (number of people in 3 rooms, e.g., 0, 1, 2, ... for each room)
+  # Let's assume a max of 2 people per room for now. So for 3 rooms, we have 3 independent classifications.
+  # We will treat this as a multi-label classification problem.
+  # The output will be 3 neurons, each with a softmax for (0, 1, 2+) people.
+  # So, for each room, we predict the number of people.
+  # Let's assume we predict for 3 rooms (room_A, room_B, parlor)
+  num_classes_per_room: 3 # (0, 1, 2 or more people)
+  num_rooms: 3
+
+# -- Training settings --
+training:
+  # Batch size for training
+  batch_size: 32
+  # Number of training epochs
+  epochs: 100
+  # Learning rate
+  lr: 0.0001
+  # Weight decay for optimizer
+  weight_decay: 0.0001
+  # Directory to save trained models
+  model_dir: "./model"
+  # Directory to save training logs and visualizations
+  log_dir: "./training"
+  # Print frequency
+  print_freq: 20
+
+# -- Inference settings --
+inference:
+  # Path to the saved model for inference
+  model_path: "./model/csi_transformer_best.pth"
+  # Directory to save inference results
+  result_dir: "./result"
+  # Visualization directory
+  visualization_dir: "./result/visualization" 

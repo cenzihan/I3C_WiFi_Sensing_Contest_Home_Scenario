@@ -1,0 +1,18 @@
+# Datasets
+/datasets/*
+!/datasets/datasets_instruction.md
+!/datasets/.gitkeep
+
+# Trained models
+/model/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE files
+.vscode/
+.idea/
+
