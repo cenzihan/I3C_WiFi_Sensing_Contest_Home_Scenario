@@ -7,7 +7,7 @@
 本项目的目标是根据从两个WiFi接收器收集的CSI数据，判断三个不同房间（A房间、B房间和一个客厅）中的人数。模型采用一个Transformer编码器处理CSI数据序列，并对每个房间进行预测。该问题被视为一个多任务分类问题。
 以Home Scenario1为例，如下图所示：
 
-![Home Scenario1](./assets/Home_Scenario1.png)
+![Home Scenario1](./asset/Home_Scenario1.png)
 Parlor中的红色的AP代表信号TX，Room A/B 中的两个蓝色的Relay 1/2代表信号RX,最终的目的是通过两个RX接受的信号数据取判断三个房间内的具体人数。
 
 ## 文件结构
@@ -49,8 +49,8 @@ Parlor中的红色的AP代表信号TX，Room A/B 中的两个蓝色的Relay 1/2�
 
 1.  **克隆仓库:**
     ```bash
-    git clone <repository-url>
-    cd <repository-name>
+    git clone https://github.com/cenzihan/I3C_WiFi_Sensing_Contest_Home_Scenario.git 
+    cd I3C_WiFi_Sensing_Contest_Home_Scenario
     ```
 
 2.  **创建Conda环境:**
@@ -66,7 +66,13 @@ Parlor中的红色的AP代表信号TX，Room A/B 中的两个蓝色的Relay 1/2�
     conda activate wifi_sensing
     ```
 
-4.  **配置参数:**
+4.  **解压dataset**
+    解压datasets/目录下的数据集压缩包，并将其解压到datasets/目录下。
+    ```bash
+    unzip datasets/home_scenario.zip -d datasets/
+    ```
+
+5.  **配置参数:**
     根据需要在 `config.yaml` 文件中调整参数。该文件控制数据路径、模型超参数和训练设置。
 
 ## 如何运行
@@ -122,125 +128,3 @@ python src/inference.py --config config.yaml
 
 关于数据集的结构、格式和采集场景的深入分析，请参阅 `datasets/datasets_instruction.md` 文件。
 
----
-<br>
-
-# WiFi-Based Human Presence Detection with Transformers (English Version)
-
-This project uses a Transformer-based deep learning model to detect human presence and count the number of people in multiple rooms using WiFi Channel State Information (CSI) data.
-
-## Project Overview
-
-The goal of this project is to determine the number of people in three different rooms (Room A, Room B, and a parlor) based on CSI data collected from two WiFi receivers. The model is a Transformer encoder that processes sequences of CSI data and makes a prediction for each room. This is treated as a multi-task classification problem.
-
-## File Structure
-
-```
-.
-├── config.yaml                 # Configuration file for the project
-├── datasets/                   # Directory for the dataset
-│   └── datasets_instruction.md # Detailed description of the dataset
-├── env/
-│   ├── environment.yml         # Conda environment definition
-│   └── setup_env.sh            # Script to set up the conda environment
-├── model/                      # To store trained model checkpoints
-├── result/
-│   ├── ...                     # Inference results
-│   └── visualization/
-│       └── ...                 # Visualizations of results (e.g., confusion matrices)
-├── training/
-│   └── ...                     # Logs and visualizations during training
-├── script/
-│   └── start_training.sh       # Script to start the training process
-├── src/
-│   ├── train.py                # Main training script
-│   ├── model.py                # Transformer model definition
-│   ├── utils.py                # Data loading and utility functions
-│   ├── losses.py               # Custom loss functions
-│   └── inference.py            # Script for running inference
-└── README.md                   # This file
-```
-
-## Environment Requirements
-
-- **OS:** Linux
-- **GPU:** NVIDIA GPU with CUDA support
-- **CUDA Version:** 12.1 or higher is recommended.
-- **Conda:** Anaconda or Miniconda should be installed.
-
-## Installation and Configuration
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd <repository-name>
-    ```
-
-2.  **Create the Conda Environment:**
-    Run the `setup_env.sh` script to create and configure the conda environment for this project.
-    ```bash
-    bash env/setup_env.sh
-    ```
-    This will create a conda environment named `wifi_sensing`.
-
-3.  **Activate the Environment:**
-    Before running any scripts, activate the newly created environment:
-    ```bash
-    conda activate wifi_sensing
-    ```
-
-4.  **Configure Parameters:**
-    Adjust the parameters in `config.yaml` as needed. This file controls data paths, model hyperparameters, and training settings.
-
-## How to Run
-
-### Training
-
-To start the training process, run the `start_training.sh` script. This will start training on a single GPU using the configuration defined in `config.yaml`.
-
-```bash
-bash script/start_training.sh
-```
-
-Trained models will be saved in the `model/` directory.
-
-### Inference
-
-To run inference on a trained model, use the `inference.py` script. Make sure the `model_path` in `config.yaml` points to the desired model checkpoint.
-
-```bash
-python src/inference.py --config config.yaml
-```
-
-The results, including classification accuracies and confusion matrices, will be saved in the `result/` directory.
-
-## Dataset
-
-Most of the dataset for this project is not included in the Git repository. Please download the dataset archive from [here](<your_download_link_here>) and unzip it into the `datasets/` directory of the project.
-
-After unzipping, ensure your file structure looks like this:
-
-```
-.
-├── datasets/
-│   ├─home scenario_1
-│   │  ├─data
-│   │  │  ├─room_A
-│   │  │  └─room_B
-│   │  └─truth
-│   │     ├─room_A
-│   │     ├─room_A
-│   │     └─parlor
-│   ├─home scenario_2
-│   │  ├─data
-│   │  │  ├─room_A
-│   │  │  └─room_B
-│   │  └─truth
-│   │     ├─room_A
-│   │     ├─room_A
-│   │     └─parlor 
-├── src/
-└── ...
-```
-
-For a detailed description of the dataset, including an in-depth analysis of its structure, format, and collection scenarios, please refer to the `datasets/datasets_instruction.md` file. 
