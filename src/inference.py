@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score
+from tqdm import tqdm
 
 from model import CSITransformer
 from utils import load_config, CSIDataset
@@ -55,7 +56,7 @@ def inference(config):
     all_labels = [[] for _ in range(model_config['num_rooms'])]
 
     with torch.no_grad():
-        for csi_data, labels in test_loader:
+        for csi_data, labels in tqdm(test_loader, desc="Running Inference"):
             csi_data = csi_data.to(device)
             outputs = model(csi_data)
             

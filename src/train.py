@@ -3,6 +3,7 @@ import argparse
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
+from tqdm import tqdm
 # No longer needed for single GPU:
 # from torch.nn.parallel import DistributedDataParallel as DDP
 # from torch.utils.data.distributed import DistributedSampler
@@ -71,7 +72,8 @@ def train(config, args):
     for epoch in range(config['training']['epochs']):
         model.train()
         total_loss = 0
-        for i, (csi_data, labels) in enumerate(train_loader):
+        train_pbar = tqdm(train_loader, desc=f"Epoch {epoch+1} [Train]")
+        for csi_data, labels in train_pbar:
             csi_data, labels = csi_data.to(device), labels.to(device)
             
             optimizer.zero_grad()
@@ -81,23 +83,24 @@ def train(config, args):
             optimizer.step()
             
             total_loss += loss.item()
-            
-            if i % config['training']['print_freq'] == 0:
-                print(f"Epoch [{epoch+1}/{config['training']['epochs']}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}")
+            train_pbar.set_postfix(loss=f"{loss.item():.4f}")
 
         # -- Validation --
         model.eval()
         val_loss = 0
         with torch.no_grad():
-            for csi_data, labels in val_loader:
+            val_pbar = tqdm(val_loader, desc=f"Epoch {epoch+1} [Val]")
+            for csi_data, labels in val_pbar:
                 csi_data, labels = csi_data.to(device), labels.to(device)
                 outputs = model(csi_data)
                 loss = criterion(outputs, labels)
                 val_loss += loss.item()
+                val_pbar.set_postfix(val_loss=f"{loss.item():.4f}")
         
+        avg_train_loss = total_loss / len(train_loader)
         avg_val_loss = val_loss / len(val_loader)
 
-        print(f"Epoch [{epoch+1}/{config['training']['epochs']}], Average Validation Loss: {avg_val_loss:.4f}")
+        print(f"Epoch [{epoch+1}/{config['training']['epochs']}] Summary: Avg Train Loss: {avg_train_loss:.4f}, Avg Val Loss: {avg_val_loss:.4f}")
         
         # Save model checkpoint
         if (epoch + 1) % 10 == 0:

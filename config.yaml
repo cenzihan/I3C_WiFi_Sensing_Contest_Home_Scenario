@@ -64,7 +64,7 @@ training:
 # -- Inference settings --
 inference:
   # Path to the saved model for inference
-  model_path: "./model/csi_transformer_best.pth"
+  model_path: "./model/csi_transformer_epoch_60.pth"
   # Directory to save inference results
   result_dir: "./result"
   # Visualization directory
